@@ -5,7 +5,7 @@ import sqlite3
 file = "Users.db"
 conn = sqlite3.connect(file)
 cursor = conn.cursor()
-
+username = "max"
 user_match = 0
 results_modified = []
 """
@@ -47,7 +47,7 @@ for record in results:
     
 
 print(results_modified)
-"""
+
 user_ID = 3
 
 username="max"
@@ -56,10 +56,10 @@ password="spatula"
 
 
 cursor.execute(
-    """
+    
     INSERT INTO user
     VALUES (:ID, :name, :email, :password)
-    """,
+    ,
     {
        "ID": user_ID, 
        "name": username,
@@ -68,3 +68,12 @@ cursor.execute(
     }
 )
 conn.commit()
+"""
+cursor.execute(
+    """
+    SELECT MAX(match_ID)
+    FROM winloss
+    """
+    )
+user_ID = cursor.fetchone()[0]
+print(user_ID)

@@ -1,3 +1,4 @@
+from ast import Try
 from multiprocessing import connection
 import sqlite3
 
@@ -20,6 +21,8 @@ class UserDB:
         email: str
         password: str
         """
+        email_used = False
+        username_used = False
         #check if email is used
         self.cursor.execute(
             """
@@ -30,57 +33,52 @@ class UserDB:
         results_email = self.cursor.fetchall()
         for record in results_email:
             if record[0] == email:
-                #check if username is used
-                self.cursor.execute(
-                    """
-                    SELECT user_name 
-                    FROM user
-                    """
-                    )
-                results_name = self.cursor.fetchall()
-                for record in results_name:
-                    if record[0] == username:
-                       return("email and username already used")
-                    else:
-                        return("email already used")
-
-            else: 
-                #check if username is used
-                self.cursor.execute(
-                    """
-                    SELECT user_name 
-                    FROM user
-                    """
-                    )
-                results_name = self.cursor.fetchall()
-                for record in results_name:
-                    if record[0] == username:
-                       return("username already used")
-                       #find highest member id
+                email_used = True
                 
-                    else:
-                        self.cursor.execute(
-                           """
-                           SELECT MAX(user_ID)
-                           FROM user
-                           """
-                           )
-                        user_ID = self.cursor.fetchone()[0] + 1
-                        # add details to database
-                        self.cursor.execute(
-                           """
-                           INSERT INTO user
-                           VALUES (:ID, :name, :email, :password)
-                           """,
-                           {
-                               "ID": user_ID, 
-                               "name": username,
-                               "email": email,
-                               "password": password
-                           }
-                        )
-                        self.connection.commit()
-                        return("account created")
+        self.cursor.execute(
+            """
+            SELECT user_name 
+            FROM user
+            """
+            )
+        results_name = self.cursor.fetchall()
+        for record in results_name:
+            if record[0] == username:
+                username_used = True
+                    
+        if email_used == True:
+            if username_used == True:
+                return("email and username already used, please try again with different email and username")
+            else:
+                return("email already used, please try again with different email")
+        
+        elif username_used == True:
+            return("username is already used, please try again with a different username")
+
+        else:
+            #find highest member id
+            self.cursor.execute(
+                """
+                SELECT MAX(user_ID)
+                FROM user
+                """
+                )
+            user_ID = self.cursor.fetchone()[0] + 1
+            # add details to database
+            self.cursor.execute(
+                """
+                INSERT INTO user
+                VALUES (:ID, :name, :email, :password)
+                """,
+                {
+                    "ID": user_ID, 
+                    "name": username,
+                    "email": email,
+                    "password": password
+                }
+            )
+            self.connection.commit()
+            return("account created")
 
     def user_login(self, username, password):
         """
@@ -110,7 +108,7 @@ class UserDB:
                         "username": username
                     }
                 )
-                result_passwod = self.cursor.fetchall()[0]
+                result_passwod = self.cursor.fetchone()[0]
                 
                 if result_passwod == password:
                     self.login = True
@@ -118,8 +116,9 @@ class UserDB:
                     return("logged in")
                 else:
                     return("incorrect password, please try agian")
-            else:
-                return("username not found, please create an account then try logging in")
+
+        if self.login == False:        
+            return("username not found, please create an account then try logging in")
 
     def check_stats(self):
         user_match = 0
@@ -167,7 +166,33 @@ class UserDB:
                 "username": self.username
             }
         )
+        user_ID = self.cursor.fetchone()[0]
         
+
+        self.cursor.execute(
+            """
+            SELECT MAX(match_ID)
+            FROM winloss
+            """
+        )
+        matchID = self.cursor.fetchone()[0] + 1
+
+        self.cursor.execute(
+            """
+            INSERT INTO winloss
+            VALUES (:matchID, :userID, :win_loss, :ai_dif)
+            """,
+            {
+                "matchID": matchID,
+                "userID": user_ID,
+                "win_loss": match_result,
+                "ai_dif": ai_dif
+            }
+        )
+        self.connection.commit()
+        
+
+
 
 
 

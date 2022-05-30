@@ -3,5 +3,7 @@ from User import UserDB
 uc = UserDB()
 
 
-uc.create_user("hunter", "bruh@gmail.com", "yeah")
+print(uc.create_user("damo","cantwaittohaveubacksir@truth.com", "bless"))
+
+#uc.add_stat("easy", "loss")
 
