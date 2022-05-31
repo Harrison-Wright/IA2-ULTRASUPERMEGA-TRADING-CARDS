@@ -48,12 +48,12 @@ class UserDB:
                     
         if email_used == True:
             if username_used == True:
-                return("email and username already used, please try again with different email and username")
+                return("email and username already used")
             else:
-                return("email already used, please try again with different email")
+                return("email already used")
         
         elif username_used == True:
-            return("username is already used, please try again with a different username")
+            return("username is already used")
 
         else:
             #find highest member id
@@ -113,12 +113,12 @@ class UserDB:
                 if result_passwod == password:
                     self.login = True
                     self.username = username
-                    return("logged in")
+                    return("logged in, please return to menu")
                 else:
                     return("incorrect password, please try agian")
 
         if self.login == False:        
-            return("username not found, please create an account then try logging in")
+            return("username not found")
 
     def check_stats(self):
         user_match = 0
@@ -146,6 +146,8 @@ class UserDB:
                 match_dif = record [2]
                 match_tuple = (user_match, match_result, match_dif)
                 results_modified.append(match_tuple)
+                
+
 
             return(results_modified)
     
