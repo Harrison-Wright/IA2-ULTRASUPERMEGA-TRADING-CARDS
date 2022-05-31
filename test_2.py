@@ -3,8 +3,8 @@ from User import UserDB
 uc = UserDB()
 
 
-print(uc.user_login("bowni", "meth"))
+print(uc.create_user("monty","tester@mail.com", "password"))
 
-uc.add_stat("easy", "loss")
+
 
 
